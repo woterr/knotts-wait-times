@@ -18,7 +18,7 @@ client.once("ready", () => {
 
 setInterval(() => {
   sendMessage(channel);
-}, 3000); // 300000
+}, 300000); // 300000
 
 client.login(process.env.token);
 module.exports.client = client;
