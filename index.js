@@ -1,7 +1,9 @@
 const { Client, Intents } = require("discord.js");
 const express = require("express");
 const { sendMessage } = require("./functions.js");
+require("dotenv").config()
 const app = express();
+let PORT = process.env.PORT || "3000"
 
 app.get("/", (request, response) => {
   response.send("Get a job");
@@ -23,6 +25,6 @@ setInterval(() => {
 client.login(process.env.token);
 module.exports.client = client;
 
-app.listen("3000", () => {
+app.listen(PORT, () => {
   console.log("App listening on port 3000");
 });
