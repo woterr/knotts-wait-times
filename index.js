@@ -1,30 +1,53 @@
-const { Client, Intents } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 const express = require("express");
 const { sendMessage } = require("./functions.js");
-require("dotenv").config()
+require("dotenv").config();
+
 const app = express();
-let PORT = process.env.PORT || "3000"
+let PORT = process.env.PORT || "3000";
 
 app.get("/", (request, response) => {
-  response.send("Get a job");
+  response.send("Bot is running! on port", PORT);
 });
 
-require("dotenv").config();
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
 
 let channel;
-client.once("ready", () => {
+
+client.once("ready", async () => {
   console.log("Bot is ready!");
-  channel = client.channels.cache.get(process.env.channelID);
+  try {
+    channel = await client.channels.fetch(process.env.channelID);
+    if (!channel) {
+      console.error(`Could not find channel with ID: ${process.env.channelID}`);
+      return;
+    }
+    console.log(`Monitoring channel: ${channel.name}`);
+    // Initial message send on startup
+    sendMessage(channel);
+  } catch (error) {
+    console.error("Error fetching channel on ready:", error);
+  }
 });
 
 setInterval(() => {
-  sendMessage(channel);
-}, 300000); // 300000
+  if (channel) {
+    sendMessage(channel);
+  } else {
+    console.log("Channel not yet initialized, skipping message send.");
+  }
+}, 300000); 
 
-client.login(process.env.token);
+client.login(process.env.token).catch(console.error);
+
 module.exports.client = client;
 
 app.listen(PORT, () => {
-  console.log("App listening on port 3000");
+  console.log(`App listening on port ${PORT}`);
 });

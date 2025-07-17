@@ -1,2 +1,3 @@
-# Project-3
-# knotts-wait-times
+# Knotts wait times
+
+custom bot for Knotts wait times discord server
